@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     address: { type: String, default: '' },
     profilePhotoUrl: { type: String, default: '' },
+    otp: { type: String, default: null },
+    otpExpiry: { type: Date, default: null },
   },
   { timestamps: true }
 );
@@ -23,12 +25,6 @@ userSchema.pre('save', async function () {
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
-};
-
-module.exports = mongoose.model('User', userSchema);
-
-userSchema.methods.comparePassword = async function(candidatePassword){
-    return await bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', userSchema);
