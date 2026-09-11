@@ -23,20 +23,22 @@ exports.addToCart = async (req, res) => {
       return res.status(404).json({ message: 'Flight not found' });
     }
 
+    const travellerCount = travellers || 1;
+
     const cartItem = await CartItem.create({
       userId: req.user.id,
       flightId,
       travelDate: travelDate || '',
       travelClass: travelClass || flight.travelClass,
-      travellers: travellers || 1,
-      price: flight.price,
+      travellers: travellerCount,
+      price: flight.price * travellerCount, // total for this leg, not per-passenger
       legType: legType || 'one_way',
       tripId: tripId || null,
     });
 
     const populatedItem = await cartItem.populate('flightId');
 
-    console.log(`Added to cart: ${flight.airline} ${flight.flightNumber} (${legType || 'one_way'}) for user ${req.user.id}`);
+    console.log(`Added to cart: ${flight.airline} ${flight.flightNumber} x${travellerCount} for user ${req.user.id}`);
 
     res.status(201).json({ message: 'Added to cart', cartItem: populatedItem });
   } catch (error) {

@@ -2,13 +2,14 @@ const Flight = require('../models/Flight');
 
 exports.searchFlights = async (req, res) => {
   try {
-    const { from, to } = req.query;
+    const { from, to, travelClass } = req.query;
     const filter = {};
     if (from) filter.fromCity = { $regex: from, $options: 'i' };
     if (to) filter.toCity = { $regex: to, $options: 'i' };
+    if (travelClass) filter.travelClass = { $regex: `^${travelClass}$`, $options: 'i' };
 
     const flights = await Flight.find(filter);
-    console.log(`Search: from="${from || 'any'}" to="${to || 'any'}" -> ${flights.length} results`);
+    console.log(`Search: from="${from || 'any'}" to="${to || 'any'}" class="${travelClass || 'any'}" -> ${flights.length} results`);
     res.status(200).json({ flights });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
