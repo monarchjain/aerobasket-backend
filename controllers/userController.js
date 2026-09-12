@@ -34,6 +34,8 @@ exports.updateProfile = async (req, res) => {
 
 exports.uploadProfilePhoto = async (req, res) => {
   try {
+    console.log('Photo upload hit. req.file:', req.file ? req.file.filename : 'MISSING — multer did not attach a file');
+
     if (!req.file) {
       return res.status(400).json({ message: 'No image file provided' });
     }
@@ -44,10 +46,11 @@ exports.uploadProfilePhoto = async (req, res) => {
     user.profilePhotoUrl = `/uploads/${req.file.filename}`;
     await user.save();
 
-    console.log(`Profile photo updated for ${user.email}: ${user.profilePhotoUrl}`);
+    console.log(`Profile photo saved to disk and DB for ${user.email}: ${user.profilePhotoUrl}`);
 
     res.status(200).json({ message: 'Profile photo updated', profilePhotoUrl: user.profilePhotoUrl });
   } catch (error) {
+    console.log(`Upload profile photo error: ${error.message}`);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
